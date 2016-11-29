@@ -30,14 +30,14 @@ options:
 
 EXAMPLES = '''
 - name: "Add Member to Group"
-  ipa_group:
+  ipa_group_membership:
     ipa_admin_user: ipa_admin_user
     ipa_admin_password: ipa_admin_password
     cn: group1
     uid: jsmith
 
 - name: "Delete Member From Group"
-  ipa_group:
+  ipa_group_membership:
     ipa_admin_user: ipa_admin_user
     ipa_admin_password: ipa_admin_password
     cn=group1
