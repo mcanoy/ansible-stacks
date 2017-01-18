@@ -157,6 +157,40 @@
   when: get_app_name_result.rc == 1
   register: create_app_result
 
+- name: "Add env variables to BuildConfig if build environment"
+  command: >
+    {{ openshift.common.client_binary }} env bc/{{ app.name }} -n {{ project.name }} {{ environment_variables_string }} --overwrite
+  when:
+  - project.environment_type is defined
+  - project.environment_type == 'build'
+  - app.build_tool is defined
+  - app.build_tool != 'none'
+  - environment_variables_string is defined
+  - environment_variables_string != ''
+
+- name: "Stop existing build - if any"
+  command: >
+    {{ openshift.common.client_binary }} cancel-build bc/{{ app.name }} -n {{ project.name }}
+  when:
+  - project.environment_type is defined
+  - project.environment_type == 'build'
+  - app.build_tool is defined
+  - app.build_tool != 'none'
+  - environment_variables_string is defined
+  - environment_variables_string != ''
+
+- name: "Start a new clean build"
+  command: >
+    {{ openshift.common.client_binary }} start-build bc/{{ app.name }} -n {{ project.name }}
+  when:
+  - project.environment_type is defined
+  - project.environment_type == 'build'
+  - app.build_tool is defined
+  - app.build_tool != 'none'
+  - environment_variables_string is defined
+  - environment_variables_string != ''
+
+
 - include: configure_networking.yml
   when: routes_present is defined and routes_present == true
 
